@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Colors Game</title>
+    <style>
+        * {
+            margin: 0px;
+            padding: 0px;
+        }
+
+        body {
+            background-color: rgb(87, 84, 84);
+        }
+
+        h1 {
+            color: rgb(248, 232, 232);
+            text-align: center;
+            font-family: cursive;
+            margin: 80px 0px 70px 0px;
+        }
+
+        .total {
+            margin: 0 auto;
+            width: 300px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            align-items: center;
+            justify-content: center;
+        }
+        .item {
+            cursor: pointer;
+            height: 120px;
+            width: 120px;
+            border: black solid 4px;
+            border-radius: 15px;
+            margin: 20px;
+        }
+
+        #green {
+            background-color: rgb(4, 160, 4);
+        }
+
+        #yellow {
+            background-color: rgb(253, 253, 22);
+        }
+
+        #red {
+            background-color: red;
+        }
+
+        #blue {
+            background-color: blue;
+        }
+
+        .selected {
+            outline: 5px solid rgba(235, 124, 231, 0.764);
+        }
+    </style>
+
+</head>
+
+<body>
+    <h1>Let's start the game😍</h1>
+    <div class="total">
+        <div class="item" id="green"></div>
+        <div class="item" id="yellow"></div>
+        <div class="item" id="red"></div>
+        <div class="item" id="blue"></div>
+    </div>
+    <span>
+
+    </span>
+</body>
+<script>
+    const colors = ['green', 'yellow', 'red', 'blue'];
+    //index of blinked box
+    const blinked = [];
+    let clicked = [];
+    var level = 1;
+    let gameover = false;
+    var inputs = document.querySelectorAll('.item');
+
+    inputs.forEach(element => {
+        element.addEventListener('click', (e) => {
+            clicked.push(colors.indexOf(e.target.attributes.id.value));
+            if (blinked.length === clicked.length) {
+                if (compare(blinked, clicked)) {
+                    document.querySelector('h1').innerText = `level ${level++}`;
+                    blinkOld(blinked);
+                    blinkOne();
+                    clicked = []
+                } else {
+                    document.body.style.backgroundColor = 'red';
+                    document.querySelector('h1').innerText = `game over`;
+                    gameover = true;
+                }
+            }
+        })
+    });
+    function wait(ms = 0) {
+        return new Promise((resolve) => {
+            setTimeout(resolve, ms);
+        })
+    }
+    const compare = (blinked, clicked) => {
+        return JSON.stringify(blinked) === JSON.stringify(clicked);
+    };
+
+    function blinkOne() {
+        let index = Math.floor(Math.random() * 4);
+        document.getElementById(colors[index]).classList.add("selected")
+        var audio = new Audio(`beep(${index}).wav`);
+        blinked.push(index);
+        audio.play();
+        setTimeout(() => {
+            document.getElementById(colors[index]).classList.remove("selected");
+        }, 200);
+    };
+    //previous blinked box
+    function blinkOld(blinkData) {
+        if (blinkData < 1) {
+            blinkOne();
+            return;
+        }
+        blinkData.forEach(async function (element) {
+            document.getElementById(colors[element]).classList.add("selected")
+            var audio = new Audio(`beep(${element}).wav`);
+            audio.play();
+            const tim = setTimeout(() => {
+                document.getElementById(colors[element]).classList.remove("selected");
+            }, 1000);
+            await wait(20300);
+        })
+
+    }
+    document.addEventListener("keypress", function (event) {
+        document.getElementsByTagName("h1")[0].innerHTML = "Lets Play The Game!";
+        blinkOne()
+    })
+</script>
+
+</html>
